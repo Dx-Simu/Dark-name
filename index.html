@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DARK-NAME</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body {
+            background: #0a0a0a;
+            font-family: 'Courier New', monospace;
+            color: #00ff41;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* CRT Effect Background */
+        .crt::before {
+            content: '';
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%),
+                        linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+            z-index: 10;
+            background-size: 100% 2px, 3px 100%;
+            pointer-events: none;
+        }
+
+        .scanline {
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            height: 100%;
+            background: linear-gradient(0deg, transparent, rgba(0, 255, 0, 0.05), transparent);
+            animation: scan 7.5s linear infinite;
+            pointer-events: none;
+            z-index: 11;
+        }
+
+        @keyframes scan {
+            0% { transform: translateY(-100%); }
+            100% { transform: translateY(100%); }
+        }
+
+        /* Glass Box Design */
+        .main-box, .login-box {
+            background: rgba(15, 15, 15, 0.9);
+            border: 1px solid #00ff41;
+            box-shadow: 0 0 20px rgba(0, 255, 65, 0.2);
+            position: relative;
+            z-index: 20;
+            width: 90%;
+            max-width: 500px;
+            padding: 2rem;
+            border-radius: 8px;
+        }
+
+        .input-style {
+            background: rgba(0, 0, 0, 0.8);
+            border: 1px solid #00ff41;
+            color: #00ff41;
+            padding: 12px;
+            width: 100%;
+            border-radius: 4px;
+            outline: none;
+        }
+
+        .input-style:focus {
+            box-shadow: 0 0 10px rgba(0, 255, 65, 0.5);
+        }
+
+        .result-container {
+            background: rgba(20, 20, 20, 0.5);
+            border: 1px dashed #00ff41;
+            padding: 15px;
+            margin-top: 20px;
+            border-radius: 4px;
+        }
+
+        .btn-primary {
+            background: #00ff41;
+            color: #000;
+            padding: 12px;
+            width: 100%;
+            border-radius: 4px;
+            font-weight: bold;
+            text-transform: uppercase;
+            margin-top: 15px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .btn-primary:hover {
+            background: #008f11;
+            box-shadow: 0 0 15px #00ff41;
+        }
+
+        .copy-btn {
+            background: #00ff41;
+            color: #000;
+            padding: 8px 15px;
+            border-radius: 4px;
+            font-weight: bold;
+            transition: 0.3s;
+            cursor: pointer;
+        }
+
+        .glitch-text {
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-shadow: 2px 0 #ff0000, -2px 0 #0000ff;
+        }
+    </style>
+</head>
+<body class="crt">
+    <div class="scanline"></div>
+
+    <div id="loginInterface" class="login-box">
+        <h1 class="text-2xl font-bold text-center mb-6 glitch-text">System Locked</h1>
+        <div class="space-y-4">
+            <div>
+                <label class="block text-xs mb-2 opacity-75">ENTER ACCESS KEY:</label>
+                <input type="password" id="passInput" class="input-style" placeholder="********">
+                <p id="errorMsg" class="text-red-500 text-[10px] mt-2 hidden">INVALID ACCESS KEY</p>
+            </div>
+            <button onclick="checkPassword()" class="btn-primary">Unlock System</button>
+        </div>
+    </div>
+
+    <div id="nameInterface" class="main-box hidden">
+        <h1 class="text-2xl font-bold text-center mb-6 glitch-text">Dark Name Styler</h1>
+        
+        <div class="space-y-4">
+            <div>
+                <label class="block text-xs mb-2 opacity-75">ENTER GANG NAME:</label>
+                <input type="text" id="userInput" class="input-style" placeholder="Type here..." onkeyup="processName()">
+            </div>
+
+            <div id="outputSection" class="hidden animate-pulse">
+                <div class="result-container">
+                    <p class="text-[10px] mb-1 opacity-60">NORMAL FULL-WIDTH:</p>
+                    <div class="flex items-center justify-between gap-3">
+                        <span id="res1" class="text-lg break-all"></span>
+                        <button onclick="copyIt('res1')" class="copy-btn"><i class="fas fa-copy"></i></button>
+                    </div>
+                </div>
+
+                <div class="result-container">
+                    <p class="text-[10px] mb-1 opacity-60">ADVANCE GANG STYLE:</p>
+                    <div class="flex items-center justify-between gap-3">
+                        <span id="res2" class="text-lg break-all"></span>
+                        <button onclick="copyIt('res2')" class="copy-btn"><i class="fas fa-copy"></i></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-8 text-center text-[10px] opacity-40">
+            CODEX VERSION: 0.0.1-STABLE
+        </div>
+    </div>
+
+    <script>
+        const map = {'a':'ａ','b':'ｂ','c':'ｃ','d':'ｄ','e':'ｅ','f':'ｆ','g':'ｇ','h':'ｈ','i':'ｉ','j':'ｊ','k':'ｋ','l':'ｌ','m':'ｍ','n':'ｎ','o':'ｏ','p':'ｐ','q':'ｑ','r':'ｒ','s':'ｓ','t':'ｔ','u':'ｕ','v':'ｖ','w':'ｗ','x':'ｘ','y':'ｙ','z':'ｚ','A':'Ａ','B':'Ｂ','C':'Ｃ','D':'Ｄ','E':'Ｅ','F':'Ｆ','G':'Ｇ','H':'Ｈ','I':'Ｉ','J':'Ｊ','K':'Ｋ','L':'Ｌ','M':'Ｍ','N':'Ｎ','O':'Ｏ','P':'Ｐ','Q':'Ｑ','R':'Ｒ','S':'Ｓ','T':'Ｔ','U':'Ｕ','V':'Ｖ','W':'Ｗ','X':'Ｘ','Y':'Ｙ','Z':'Ｚ','0':'０','1':'１','2':'２','3':'３','4':'４','5':'５','6':'６','7':'７','8':'８','9':'９',' ':'—'};
+
+        function checkPassword() {
+            const pass = document.getElementById('passInput').value;
+            const correctPass = "d1d4xcodex";
+            
+            if(pass === correctPass) {
+                document.getElementById('loginInterface').classList.add('hidden');
+                document.getElementById('nameInterface').classList.remove('hidden');
+            } else {
+                const error = document.getElementById('errorMsg');
+                error.classList.remove('hidden');
+                setTimeout(() => error.classList.add('hidden'), 2000);
+            }
+        }
+
+        // Allow 'Enter' key to trigger password check
+        document.getElementById('passInput').addEventListener("keypress", function(event) {
+            if (event.key === "Enter") {
+                checkPassword();
+            }
+        });
+
+        function processName() {
+            let val = document.getElementById('userInput').value;
+            let out = document.getElementById('outputSection');
+            
+            if(val) {
+                out.classList.remove('hidden');
+                let converted = val.split('').map(c => map[c] || c).join('');
+                document.getElementById('res1').innerText = converted;
+                document.getElementById('res2').innerText = converted + " ايڪـͬــͤــᷜــͨــͣــͪـي";
+            } else {
+                out.classList.add('hidden');
+            }
+        }
+
+        function copyIt(id) {
+            let text = document.getElementById(id).innerText;
+            navigator.clipboard.writeText(text);
+            
+            let btn = event.currentTarget;
+            let oldIcon = btn.innerHTML;
+            btn.innerHTML = '<i class="fas fa-check"></i>';
+            setTimeout(() => { btn.innerHTML = oldIcon; }, 1000);
+        }
+    </script>
+</body>
+</html>
